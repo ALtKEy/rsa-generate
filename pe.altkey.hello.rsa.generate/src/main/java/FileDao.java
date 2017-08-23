@@ -1,4 +1,5 @@
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.KeyFactory;
@@ -44,6 +45,27 @@ public class FileDao {
 		FileOutputStream privateFos = new FileOutputStream(writePath + "private.key");
 		privateFos.write(privateKey.getEncoded());
 		privateFos.close();
+	}
+	
+	protected void writeFile(byte[] encodeBytes, String path, String fileName) {
+		//
+		// FileOutputStream 을 이용합니다.
+		FileOutputStream stream = null;
+		try {
+			stream = new FileOutputStream(path + fileName);
+			stream.write(encodeBytes);
+		} catch (IOException e) {
+			//
+			// 파일이 있거나 폴더위치가 없거나 일때 에러가 납니다.
+			e.printStackTrace();
+		} finally {
+			try {
+				stream.close();
+			} catch (IOException e) {
+				//
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**
@@ -143,5 +165,36 @@ public class FileDao {
 			}
 		}
 		return returnPrivateKey;
+	}
+	
+	protected byte[] readFile(String path, String fileName) {
+		//
+		FileInputStream inputStream = null;
+		
+		try {
+			inputStream = new FileInputStream(path + fileName);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		byte[] buffer = null;
+		try {
+			buffer = new byte[inputStream.available()];
+			int count = 0;
+			do {
+				count = inputStream.read(buffer);
+			} while(count > 0);
+		} catch (IOException e) {
+			//
+			e.printStackTrace();
+		} finally {
+			try {
+				inputStream.close();
+			} catch (IOException e) {
+				//
+				e.printStackTrace();
+			}
+		}
+		
+		return buffer;
 	}
 }
